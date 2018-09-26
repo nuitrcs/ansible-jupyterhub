@@ -1,0 +1,9 @@
+---
+ansible_user: rcs
+miniconda_ver: 4.5.11
+miniconda_checksums:
+  Miniconda3-4.5.11-Linux-x86_64.sh: "md5:e1045ee415162f944b6aebfe560b8fee"
+conda_env_path: /opt/conda-envs/jhub
+conda_exe_path: /opt/miniconda/bin/conda
+jupyterhub_version: 0.9.4
+notebook_version: 5.6.0

@@ -1,0 +1,35 @@
+---
+- name: create conda environment with python 3.6
+  command: "{{ conda_exe_path }} create -y -p {{ conda_env_path }} python=3.6"
+  args:
+    creates: "{{ conda_env_path }}"
+
+- name: install jupyterhub into environment
+  command: "{{ conda_exe_path }} install -y -p {{ conda_env_path }} -c conda-forge jupyterhub={{ jupyterhub_version }}"
+  notify:
+  - restart jupyterhub    
+  
+- name: install notebook package for local notebooks
+  command: "{{ conda_exe_path }} install -y -p {{ conda_env_path }} notebook={{ notebook_version }}"
+
+- name: jupyterhub config directory
+  file:
+    path: /etc/jupyterhub
+    state: directory
+
+- name: jupyterhub config file
+  template:
+    src: jupyterhub_config.py
+    dest: /etc/jupyterhub/jupyterhub_config.py
+  notify:
+  - restart jupyterhub    
+
+- name: jupyterhub systemd service definition
+  template:
+    src: jupyterhub.service
+    dest: /etc/systemd/system/jupyterhub.service
+  notify:
+  - restart jupyterhub    
+
+- name: start jupyterhub
+  systemd: state=started name=jupyterhub daemon_reload=yes
