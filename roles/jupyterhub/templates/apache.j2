@@ -1,0 +1,31 @@
+# redirect HTTP to HTTPS
+<VirtualHost *:80>
+  ServerName {{ hostname }}
+  Redirect / https://{{ hostname }}/
+</VirtualHost>
+
+<VirtualHost *:443>
+
+  ServerName {{ hostname }}
+
+  # configure SSL
+  SSLEngine on
+  SSLCertificateFile /etc/letsencrypt/live/{{ hostname }}/fullchain.pem
+  SSLCertificateKeyFile /etc/letsencrypt/live/{{ hostname }}/privkey.pem
+  SSLProtocol All -SSLv2 -SSLv3
+  SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+
+  # Use RewriteEngine to handle websocket connection upgrades
+  RewriteEngine On
+  RewriteCond %{HTTP:Connection} Upgrade [NC]
+  RewriteCond %{HTTP:Upgrade} websocket [NC]
+  RewriteRule /(.*) ws://127.0.0.1:8000/$1 [P,L]
+
+  <Location "/">
+    # preserve Host header to avoid cross-origin problems
+    ProxyPreserveHost on
+    # proxy to JupyterHub
+    ProxyPass         http://127.0.0.1:8000/
+    ProxyPassReverse  http://127.0.0.1:8000/
+  </Location>
+</VirtualHost>

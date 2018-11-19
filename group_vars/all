@@ -1,5 +1,6 @@
 ---
-ansible_user: rcs
+hostname: exoplanets.rcs.northwestern.edu
+ansible_user: ubuntu
 miniconda_ver: 4.5.11
 miniconda_checksums:
   Miniconda3-4.5.11-Linux-x86_64.sh: "md5:e1045ee415162f944b6aebfe560b8fee"
@@ -7,3 +8,16 @@ conda_env_path: /opt/conda-envs/jhub
 conda_exe_path: /opt/miniconda/bin/conda
 jupyterhub_version: 0.9.4
 notebook_version: 5.6.0
+certbot_create_if_missing: true
+certbot_admin_email: m-rich@northwestern.edu
+certbot_certs:
+  - domains:
+    - "{{ hostname }}"
+certbot_create_standalone_stop_services:
+  - apache2
+apache_mods_enabled:
+  - rewrite.load
+  - ssl.load
+  - proxy.load
+  - proxy_http.load
+  - proxy_wstunnel.load

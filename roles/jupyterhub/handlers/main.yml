@@ -3,3 +3,9 @@
   service:
     name: jupyterhub
     state: restarted
+
+- name: restart apache
+  service:
+    name: apache2
+    state: restarted
+

@@ -1,6 +1,6 @@
 ---
 - name: create conda environment with python 3.6
-  command: "{{ conda_exe_path }} create -y -p {{ conda_env_path }} python=3.6"
+  command: "{{ conda_exe_path }} create -y -p {{ conda_env_path }} python=3.7 anaconda=5.3"
   args:
     creates: "{{ conda_env_path }}"
 
@@ -29,7 +29,24 @@
     src: jupyterhub.service
     dest: /etc/systemd/system/jupyterhub.service
   notify:
-  - restart jupyterhub    
+  - restart jupyterhub
 
 - name: start jupyterhub
   systemd: state=started name=jupyterhub daemon_reload=yes
+
+- name: remove default apache vhosts
+  file:
+    path: /etc/apache2/sites-enabled/{{ item }}
+    state: absent
+  with_items:
+    - 000-default.conf
+    - vhosts.conf
+  notify:
+  - restart apache
+
+- name: add apache vhost
+  template:
+    src: apache.j2
+    dest: /etc/apache2/sites-enabled/default-ssl.conf
+  notify:
+  - restart apache

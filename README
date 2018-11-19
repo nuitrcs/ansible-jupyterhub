@@ -1,0 +1,11 @@
+# Jupyterhub setup for workshops
+
+Works on Ubuntu 16.04+ 
+
+Before using, SSH to host and install `python-minimal` (if not installed via user data):
+
+```
+sudo apt install -y python-minimal
+```
+
+Then set up DNS record and edit `group_vars/all` and enter DNS name of host for let's encrypt.
